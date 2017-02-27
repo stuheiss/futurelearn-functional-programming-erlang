@@ -47,7 +47,11 @@ show_file_contents([L|Ls]) ->
 % means that the word "foo" occurs on lines 3, 4, 5, 7, 11, 12 and 13 in the file.
 
 main() ->
-  pretty_print(index('gettysburg-address.txt')).
+  index('gettysburg-address.txt').
+
+% index a text file by line number
+index(FileName) ->
+  pretty_print(index_text_file(FileName)).
 
 % pretty print a {token,linenumbers} tuple
 % transform list of ints to list of ranges
@@ -81,7 +85,7 @@ line_number([X|Xs], N) ->
 % split on ws and punctuation
 get_tokens([]) -> [];
 get_tokens([X|Xs]) ->
-  [string:tokens(X, " -.,\\\t") | get_tokens(Xs)].
+  [string:tokens(X, " -.,\\\t()\"") | get_tokens(Xs)].
 
 % remove words less that length 3 from list of tokens
 remove_short_words(Xs) -> lists:filter(fun(X)->length(X)>3 end, Xs).
@@ -92,7 +96,7 @@ nub([X|Xs]) ->
   [X|nub(lists:filter(fun(Y)->X=/=Y end,Xs))].
 
 % index contents of a text file
-index(File) ->
+index_text_file(File) ->
   Lines=get_file_contents(File),
   LinesWithNumbers=line_number(Lines),
   Words=nub(remove_short_words(lists:sort(lists:concat(get_tokens(Lines))))),
