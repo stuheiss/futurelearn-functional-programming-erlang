@@ -1,5 +1,5 @@
 -module(index).
-%-export([get_file_contents/1,show_file_contents/1]).
+-export([run_tests/0,main/0,bench/1,bench/2,index/1,get_file_contents/1,show_file_contents/1]).
 -compile(export_all).
 
 % Used to read a file into a list of lines.
@@ -46,8 +46,47 @@ show_file_contents([L|Ls]) ->
 %
 % means that the word "foo" occurs on lines 3, 4, 5, 7, 11, 12 and 13 in the file.
 
+% bench(fun()->yourfunction(args) end)
+% bench(fun()->yourfunction(args) end, "string")
+bench(F,Str) ->
+  io:format("~s:", [Str]),
+  bench(F).
+
+% benchmark a function with no args
+bench(F) ->
+    statistics(runtime),
+    statistics(wall_clock),
+
+    % your code here
+    Results=F(),
+
+    {_, Time1} = statistics(runtime),
+    {_, Time2} = statistics(wall_clock),
+    U1 = Time1 * 1000,
+    U2 = Time2 * 1000,
+    io:format("Code time=~p (~p) microseconds~n",
+    [U1,U2]),
+    Results.
+
+% print contents of list to console
+dump_list([])->ok;
+dump_list([X|Xs])->
+  io:format("~p~n",[X]),
+  dump_list(Xs).
+
 main() ->
-  index('gettysburg-address.txt').
+  Index=index('gettysburg-address.txt'),
+  dump_list(Index).
+main(File) ->
+  Index=index(File),
+  dump_list(Index).
+
+main_silent() ->
+  _Index=index('gettysburg-address.txt'),
+  ok.
+main_silent(File) ->
+  _Index=index(File),
+  ok.
 
 % index a text file by line number
 index(FileName) ->
@@ -83,9 +122,14 @@ line_number([X|Xs], N) ->
 
 % split a list of lines of text into a list of tokens
 % split on ws and punctuation
-get_tokens([]) -> [];
-get_tokens([X|Xs]) ->
-  [string:tokens(X, " -.,\\\t()\"") | get_tokens(Xs)].
+tokens_from_list(Xs) -> tokens_from_list(Xs,[]).
+tokens_from_list([], Acc) -> lists:concat(Acc);
+tokens_from_list([X|Xs], Acc) ->
+  tokens_from_list(Xs, [tokens_from_string(X) | Acc]).
+
+% split a line of text into a list of tokens
+tokens_from_string(String) ->
+  string:tokens(String, " -.,\\\t()\"").
 
 % remove words less that length 3 from list of tokens
 remove_short_words(Xs) -> lists:filter(fun(X)->length(X)>3 end, Xs).
@@ -95,11 +139,30 @@ nub([]) -> [];
 nub([X|Xs]) ->
   [X|nub(lists:filter(fun(Y)->X=/=Y end,Xs))].
 
+% return sorted and pruned list of tokens from list of strings
+words_from_list(Lines) ->
+  nub(remove_short_words(lists:sort(tokens_from_list(Lines)))).
+
+bench_words_from_list(Lines) ->
+  bench(fun()->nub(remove_short_words(lists:sort(tokens_from_list(Lines)))) end,"words_from_list").
+
+bench_tokens_and_linenumbers(Words, LinesWithNumbers) ->
+  bench(fun()->tokens_and_linenumbers(Words, LinesWithNumbers) end,"tokens_and_linenumbers").
+
 % index contents of a text file
 index_text_file(File) ->
   Lines=get_file_contents(File),
   LinesWithNumbers=line_number(Lines),
-  Words=nub(remove_short_words(lists:sort(lists:concat(get_tokens(Lines))))),
+  Words=bench_words_from_list(Lines),
+  bench_tokens_and_linenumbers(Words, LinesWithNumbers).
+
+% benchmark inedex_text_from_file
+% index:bench_index_text_file('gettysburg-address.txt').
+bench_index_text_file(File) ->
+  Lines=get_file_contents(File),
+  LinesWithNumbers=line_number(Lines),
+  Tokens=tokens_from_list(Lines),
+  Words=nub(remove_short_words(lists:sort(Tokens))),
   tokens_and_linenumbers(Words, LinesWithNumbers).
 
 % transform a list of Tokens and LinesWithNumbers to list of tuples {Token,LineNumbers}
@@ -107,7 +170,7 @@ index_text_file(File) ->
 % return [{T1,[{Na,Nb}...]},{T2,[{Nc,Nd}...]},...]
 tokens_and_linenumbers([],_Ls) -> [];
 tokens_and_linenumbers([W|Ws],Ls) ->
-  {A,_B}=lists:unzip(lists:filter(fun({_N,L}) -> lists:member(W,hd(get_tokens([L]))) end, Ls)),
+  {A,_B}=lists:unzip(lists:filter(fun({_N,L}) -> lists:member(W,tokens_from_string(L)) end, Ls)),
   [{W,A} | tokens_and_linenumbers(Ws,Ls)].
 
 run_tests() ->
