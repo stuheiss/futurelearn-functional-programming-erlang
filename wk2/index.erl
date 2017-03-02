@@ -1,11 +1,12 @@
 -module(index).
--export([index_and_show_gettysburg/0,index_and_show_dickens/0,index_and_show/1,index/1]).
+-export([run_tests/0,index_and_show_gettysburg/0,index_and_show_dickens/0,index_and_show/1,index/1]).
 
 % Usages:
 % index('filename.txt')           %% return an index of Words and LineNumbers from a file
 % index_and_show('filename.txt')  %% display index from file
 % index_and_show_gettysburg()     %% display index from the Gettysburg Address
 % index_and_show_dickens()        %% display index from the A Christmas Carol
+% run_tests()                     %% requires file gettysburg-address.txt
 %
 % index_and_show() displays the index on the console
 % index() just returns the index
@@ -69,6 +70,8 @@ index_and_show(FileName) ->
   show_file_contents(list_of_tuples_to_string(index(FileName))).
 
 % index a text file by line number
+% return a list of [{Word, LineNumbers}] like
+% [{"foo",[{3,5},{7,7},{11,13}]},{"bar",[{2,4},{6,6},{10,12}]}... ]
 index(FileName) ->
   Lines=get_file_contents(FileName),
   NumberedLines=line_number(Lines),
@@ -94,8 +97,8 @@ numbers_to_ranges([X|Xs],[{Low,High}|Ys]) when X-High==1 ->
 numbers_to_ranges([X|Xs],Acc) ->
   numbers_to_ranges(Xs,[{X,X}|Acc]).
 
-% transform a list of strings to a list of tuples
-% left member is linenumber, right member is string
+% transform a list of strings to a list of tuples {Number,String}
+% where Number is linenumber, String is current line
 % [S1,S2,..SN] => [{1,S1},{2,S2},...{N,SN}]
 line_number(Lines) -> line_number(Lines, 1).
 line_number([], _N) -> [];
@@ -106,7 +109,6 @@ line_number([X|Xs], N) ->
   end.
 
 % split a list of lines of text into a list of tokens
-% split on ws and punctuation
 tokens_from_list(Xs) ->
   tokens_from_list(Xs,[]).
 tokens_from_list([], Acc) ->
@@ -115,6 +117,7 @@ tokens_from_list([X|Xs], Acc) ->
   tokens_from_list(Xs, [tokens_from_string(X) | Acc]).
 
 % split a line of text into a list of tokens
+% split on ws and punctuation
 tokens_from_string(String) ->
   string:tokens(String, " -.,\\\t()\"").
 
@@ -144,6 +147,26 @@ words_and_linenumbers([Word|Words],NumberedLines) ->
 line_numbers_has_word(Word, NumberedLines) ->
   {LineNumbers,_}=lists:unzip(lists:filter(fun({_Number,Line}) -> lists:member(Word,tokens_from_string(Line)) end, NumberedLines)),
   LineNumbers.
+
+% take N elems of Xs
+take(N,Xs) -> take(N,Xs,[]).
+take(0,_Xs,Acc) -> lists:reverse(Acc);
+take(N,[X|Xs],Acc) when N>0 -> take(N-1,Xs,[X|Acc]).
+
+% drop N elems of Xs
+drop(0,Xs) -> Xs;
+drop(N,[_X|Xs]) when N>0 -> drop(N-1,Xs).
+
+% run some tests
+run_tests() ->
+  [{3,5},{7,7},{11,13}]=numbers_to_ranges([3,4,5,7,11,12,13]),
+  I=index('gettysburg-address.txt'),
+  100=length(I),
+  {"Four",[{1,1}]}=hd(I),
+  {"years",[{1,1}]}=lists:last(I),
+  [{"Four",[{1,1}]},{"Liberty",[{2,2}]},{"above",[{16,16}]}]=take(3,I),
+  [{"work",[{19,19}]},{"world",[{17,17}]},{"years",[{1,1}]}]=drop(length(I)-3,I),
+  ok.
 
 %%% % BENCHMARK
 %%%
@@ -183,7 +206,3 @@ line_numbers_has_word(Word, NumberedLines) ->
 %%%   Tokens=tokens_from_list(Lines),
 %%%   Words=nub(remove_short_words(lists:sort(Tokens))),
 %%%   words_and_linenumbers(Words, NumberedLines).
-%%%
-%%% run_tests() ->
-%%%   [{3,5},{7,7},{11,13}]=numbers_to_ranges([3,4,5,7,11,12,13]),
-%%%   ok.
