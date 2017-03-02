@@ -1,16 +1,22 @@
 -module(index).
--export([run_tests/0,index_and_dump_gettysburg/0,index_and_dump_file/1,bench/1,bench/2,index/1,get_file_contents/1,show_file_contents/1]).
--compile(export_all).
+-export([index_and_show_gettysburg/0,index_and_show_dickens/0,index_and_show/1,index/1]).
+
+% Usages:
+% index('filename.txt')           %% return an index of Words and LineNumbers from a file
+% index_and_show('filename.txt')  %% display index from file
+% index_and_show_gettysburg()     %% display index from the Gettysburg Address
+% index_and_show_dickens()        %% display index from the A Christmas Carol
+%
+% index_and_show() displays the index on the console
+% index() just returns the index
 
 % Used to read a file into a list of lines.
 % Example files available in:
 %   gettysburg-address.txt (short)
 %   dickens-christmas.txt  (long)
 
-
 % Get the contents of a text file into a list of lines.
 % Each line has its trailing newline removed.
-
 get_file_contents(Name) ->
     {ok,File} = file:open(Name,[read]),
     Rev = get_all_lines(File,[]),
@@ -18,7 +24,6 @@ lists:reverse(Rev).
 
 % Auxiliary function for get_file_contents.
 % Not exported.
-
 get_all_lines(File,Partial) ->
     case io:get_line(File,"") of
         eof -> file:close(File),
@@ -29,7 +34,6 @@ get_all_lines(File,Partial) ->
 
 % Show the contents of a list of strings.
 % Can be used to check the results of calling get_file_contents.
-
 show_file_contents([L|Ls]) ->
     io:format("~s~n",[L]),
     show_file_contents(Ls);
@@ -46,24 +50,39 @@ show_file_contents([L|Ls]) ->
 %
 % means that the word "foo" occurs on lines 3, 4, 5, 7, 11, 12 and 13 in the file.
 
+% convert list of tuples to a string
+list_of_tuples_to_string([]) ->
+  "";
+list_of_tuples_to_string([L|Ls]) ->
+  io_lib:format("~p",[L]) ++ list_of_tuples_to_string(Ls).
+
+% index and show the gettysburg address
+index_and_show_gettysburg() ->
+  index_and_show('gettysburg-address.txt').
+
+% index and show dicken's christmas carol
+index_and_show_dickens() ->
+  index_and_show('dickens-christmas.txt').
+
+% index and show a file
+index_and_show(FileName) ->
+  show_file_contents(list_of_tuples_to_string(index(FileName))).
+
 % index a text file by line number
 index(FileName) ->
-  index_text_file(FileName).
-
-% index contents of a text file
-index_text_file(File) ->
-  Lines=get_file_contents(File),
+  Lines=get_file_contents(FileName),
   NumberedLines=line_number(Lines),
   Words=words_from_list(Lines),
-  format_linenumbers_to_ranges(tokens_and_linenumbers(Words, NumberedLines)).
+  WordsAndLineNumbers=words_and_linenumbers(Words, NumberedLines),
+  {Words,LineNumbers}=lists:unzip(WordsAndLineNumbers),
+  lists:zip(Words,list_of_numbers_to_ranges(LineNumbers)).
 
-% transform list of ints to list of ranges
-% [1,2,3,5,7,8,9] => [{1,3},{5,5},{7,9}]
-format_linenumbers_to_ranges([]) -> [];
-format_linenumbers_to_ranges([{Word,ListOfNumbers}|Xs]) ->
-  [{Word,numbers_to_ranges(ListOfNumbers)}|format_linenumbers_to_ranges(Xs)].
+% transform list of linenumbers lists to list of linenumber ranges
+list_of_numbers_to_ranges([]) -> [];
+list_of_numbers_to_ranges([X|Xs]) ->
+  [numbers_to_ranges(X)|list_of_numbers_to_ranges(Xs)].
 
-% transform list [1,2,3,5,7,8,9] => [{1,3},{5,5},{7,9}]
+% transform linenumber list to range [1,2,3,5,7,8,9] => [{1,3},{5,5},{7,9}]
 numbers_to_ranges(Xs) ->
   numbers_to_ranges(Xs,[]).
 numbers_to_ranges([],Acc) ->
@@ -108,97 +127,63 @@ nub([]) -> [];
 nub([X|Xs]) ->
   [X|nub(lists:filter(fun(Y)->X=/=Y end,Xs))].
 
-% return sorted and pruned list of tokens from list of strings
+% return sorted and pruned list of Words from list of strings
 words_from_list(Lines) ->
   nub(remove_short_words(lists:sort(tokens_from_list(Lines)))).
 
-% transform a list of Tokens and NumberedLines to list of tuples {Token,LineNumbers}
-% where LineNumbers is an array of linenumbers a given token appears in
-% return [{T1,[{Na,Nb}...]},{T2,[{Nc,Nd}...]},...]
-tokens_and_linenumbers([],_NumberedLines) ->
+% transform a list of Words and NumberedLines to list of tuples {Word,LineNumbers}
+% where LineNumbers is a list of linenumbers a given Word appears in
+% return [{W1,[{Na,Nb}...]},{W2,[{Nc,Nd}...]},...]
+words_and_linenumbers([],_NumberedLines) ->
   [];
-tokens_and_linenumbers([Word|Words],NumberedLines) ->
-  {A,_B}=lists:unzip(lists:filter(fun({_N,L}) -> lists:member(Word,tokens_from_string(L)) end, NumberedLines)),
-  [{Word,A} | tokens_and_linenumbers(Words,NumberedLines)].
+words_and_linenumbers([Word|Words],NumberedLines) ->
+  LineNumbers=line_numbers_has_word(Word, NumberedLines),
+  [{Word,LineNumbers} | words_and_linenumbers(Words,NumberedLines)].
 
-% BENCHMARK
+% return list of line numbers of NumberedLines that contain Word
+line_numbers_has_word(Word, NumberedLines) ->
+  {LineNumbers,_}=lists:unzip(lists:filter(fun({_Number,Line}) -> lists:member(Word,tokens_from_string(Line)) end, NumberedLines)),
+  LineNumbers.
 
-% bench(fun()->yourfunction(args) end)
-% bench(fun()->yourfunction(args) end, "string")
-bench(F,Str) ->
-  io:format("~s:", [Str]),
-  bench(F).
-
-% benchmark a function with no args
-bench(F) ->
-    statistics(runtime),
-    statistics(wall_clock),
-
-    % your code here
-    Results=F(),
-
-    {_, Time1} = statistics(runtime),
-    {_, Time2} = statistics(wall_clock),
-    U1 = Time1 * 1000,
-    U2 = Time2 * 1000,
-    io:format("Code time=~p (~p) microseconds~n",
-    [U1,U2]),
-    Results.
-
-bench_words_from_list(Lines) ->
-  bench(fun()->nub(remove_short_words(lists:sort(tokens_from_list(Lines)))) end,"words_from_list").
-
-bench_tokens_and_linenumbers(Words, NumberedLines) ->
-  bench(fun()->tokens_and_linenumbers(Words, NumberedLines) end,"tokens_and_linenumbers").
-
-% benchmark inedex_text_from_file
-% index:bench_index_text_file('gettysburg-address.txt').
-bench_index_text_file(File) ->
-  Lines=get_file_contents(File),
-  NumberedLines=line_number(Lines),
-  Tokens=tokens_from_list(Lines),
-  Words=nub(remove_short_words(lists:sort(Tokens))),
-  tokens_and_linenumbers(Words, NumberedLines).
-
-% utility to dump a list to console
-dump_list([])->ok;
-dump_list([X|Xs])->
-  io:format("~p~n",[X]),
-  dump_list(Xs).
-
-% index and dump the gettysburg address
-index_and_dump_gettysburg() ->
-  Index=index('gettysburg-address.txt'),
-  dump_list(Index).
-
-% index and dump dicken's christmas carol
-index_and_dump_dickens() ->
-  Index=index('dickens-christmas.txt'),
-  dump_list(Index).
-
-% index and dump a file
-index_and_dump_file(File) ->
-  Index=index(File),
-  dump_list(Index).
-
-% index gettysburg address and display the count of indexes
-index_gettysburg() ->
-  Index=index('gettysburg-address.txt'),
-  io:format("~p tokens~n", [length(Index)]),
-  ok.
-
-% index dicken's christmas carol and display the count of indexes
-index_dickens() ->
-  Index=index('dickens-christmas.txt'),
-  io:format("~p tokens~n", [length(Index)]),
-  ok.
-
-% index a file and display the count of indexes
-index_file(File) ->
-  Index=index(File),
-  io:format("~p tokens~n", [length(Index)]),
-  ok.
-
-run_tests() ->
-  [{3,5},{7,7},{11,13}]=numbers_to_ranges([3,4,5,7,11,12,13]),
-  ok.
+%%% % BENCHMARK
+%%%
+%%% % bench(fun()->yourfunction(args) end)
+%%% % bench(fun()->yourfunction(args) end, "string")
+%%% bench(F,Str) ->
+%%%   io:format("~s:", [Str]),
+%%%   bench(F).
+%%%
+%%% % benchmark a function with no args
+%%% bench(F) ->
+%%%     statistics(runtime),
+%%%     statistics(wall_clock),
+%%%
+%%%     % your code here
+%%%     Results=F(),
+%%%
+%%%     {_, Time1} = statistics(runtime),
+%%%     {_, Time2} = statistics(wall_clock),
+%%%     U1 = Time1 * 1000,
+%%%     U2 = Time2 * 1000,
+%%%     io:format("Code time=~p (~p) microseconds~n",
+%%%     [U1,U2]),
+%%%     Results.
+%%%
+%%% bench_words_from_list(Lines) ->
+%%%   bench(fun()->nub(remove_short_words(lists:sort(tokens_from_list(Lines)))) end,"words_from_list").
+%%%
+%%% bench_words_and_linenumbers(Words, NumberedLines) ->
+%%%   bench(fun()->words_and_linenumbers(Words, NumberedLines) end,"words_and_linenumbers").
+%%%
+%%% % benchmark inedex_text_from_file
+%%% % index:bench_index('gettysburg-address.txt').
+%%% bench_index(FileName) ->
+%%%   Lines=get_file_contents(FileName),
+%%%   NumberedLines=line_number(Lines),
+%%%   Tokens=tokens_from_list(Lines),
+%%%   Words=nub(remove_short_words(lists:sort(Tokens))),
+%%%   words_and_linenumbers(Words, NumberedLines).
+%%%
+%%% run_tests() ->
+%%%   [{3,5},{7,7},{11,13}]=numbers_to_ranges([3,4,5,7,11,12,13]),
+%%%   ok.
