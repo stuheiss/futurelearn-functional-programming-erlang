@@ -1,75 +1,135 @@
 -module(rps).
--compile(export_all).
+-export([play/1,echo/1,play_two/3,rock/1,no_repeat/1,const/1,enum/1,cycle/1,rand/1,val/1,tournament/2]).
 
--type rps_type():: error | rock | paper | scissors.
--type result_type():: error | draw | win | lose.
 
-% Rock defeats scissors, because a rock will blunt a pair of scissors
-% Paper defeats rock, because a paper can wrap up a rock
-% Scissors defeat paper, because scissors cut paper
-% beat(loser) -> winner.
--spec beat(_) -> rps_type().
-beat(rock) -> paper;
-beat(paper) -> scissors;
-beat(scissors) -> rock;
-beat(_) -> error.
+%
+% play one strategy against another, for N moves.
+%
 
-% lose(winner) -> loser.
--spec lose(_) -> rps_type().
-lose(rock) -> scissors;
-lose(paper) -> rock;
-lose(scissors) -> paper;
-lose(_) -> error.
+play_two(StrategyL,StrategyR,N) ->
+    play_two(StrategyL,StrategyR,[],[],N).
 
-% Define a function result which when applied to two plays gives the result,
-% from the point of view of the first. For example:
-% result(rock,paper) = lose.
-% result can return win/lose/draw
--spec result(_,_) -> result_type().
-result(X,Y) ->
-  case {beat(X), beat(Y)} of
-    {error,_} -> error;
-    {_,error} -> error;
-    {Y,_} -> lose;
-    {_,X} -> win;
-    {_,_} -> draw
-  end.
+% tail recursive loop for play_two/3
+% 0 case computes the result of the tournament
 
--spec result_to_int(_,_) -> -1 | 0 | 1.
-result_to_int(X,Y) ->
-  case result(X,Y) of
-    win -> 1;
-    lose -> -1;
-    _ -> 0
-  end.
+% FOR YOU TO DEFINE
+% REPLACE THE dummy DEFINITIONS
 
-% A tournament is a series of rounds – each round is a single choice from the
-% two players, which we’ll call left and right. Suppose that the choices are
-% given as two lists; give the tournament result as an integer, so that the
-% number counts the difference between the number of wins for left and right.
-% A positive value is an overall win for left, a negative for right, and zero
-% represents an overall draw. For instance:
-% tournament([rock,rock,paper,paper],[rock,paper,scissors,rock] = -1
--spec tournament([rps_type()],[rps_type()]) -> number().
-tournament(Left,Right) ->
-  lists:sum(lists:zipwith(fun result_to_int/2,Left,Right)).
+play_two(_,_,PlaysL,PlaysR,0) ->
+   dummy;
 
--spec run_tests() -> 'ok'.
-run_tests() ->
-  paper=beat(rock),
-  scissors=beat(paper),
-  rock=beat(scissors),
-  lose=result(rock,paper),
-  win=result(paper,rock),
-  lose=result(paper,scissors),
-  win=result(scissors,paper),
-  lose=result(scissors,rock),
-  win=result(rock,scissors),
-  draw=result(rock,rock),
-  draw=result(paper,paper),
-  draw=result(scissors,scissors),
-  error=result(rock,water),
-  error=result(water,rock),
-  -1=tournament([rock,rock,paper,paper],[rock,paper,scissors,rock]),
-  1=tournament([rock,scissors,paper,paper],[rock,paper,scissors,rock]),
-  ok.
+play_two(StrategyL,StrategyR,PlaysL,PlaysR,N) ->
+   dummy.
+
+%
+% interactively play against a strategy, provided as argument.
+%
+
+play(Strategy) ->
+    io:format("Rock - paper - scissors~n"),
+    io:format("Play one of rock, paper, scissors, ...~n"),
+    io:format("... r, p, s, stop, followed by '.'~n"),
+    play(Strategy,[]).
+
+% tail recursive loop for play/1
+
+play(Strategy,Moves) ->
+    {ok,P} = io:read("Play: "),
+    Play = expand(P),
+    case Play of
+	stop ->
+	    io:format("Stopped~n");
+	_    ->
+	    Result = result(Play,Strategy(Moves)),
+	    io:format("Result: ~p~n",[Result]),
+	    play(Strategy,[Play|Moves])
+    end.
+
+%
+% auxiliary functions
+%
+
+% transform shorthand atoms to expanded form
+    
+expand(r) -> rock;
+expand(p) -> paper;		    
+expand(s) -> scissors;
+expand(X) -> X.
+
+% result of one set of plays
+
+result(rock,rock) -> draw;
+result(rock,paper) -> lose;
+result(rock,scissors) -> win;
+result(paper,rock) -> win;
+result(paper,paper) -> draw;
+result(paper,scissors) -> lose;
+result(scissors,rock) -> lose;
+result(scissors,paper) -> win;
+result(scissors,scissors) -> draw.
+
+% result of a tournament
+
+tournament(PlaysL,PlaysR) ->
+    lists:sum(
+      lists:map(fun outcome/1,
+		lists:zipwith(fun result/2,PlaysL,PlaysR))).
+
+outcome(win)  ->  1;
+outcome(lose) -> -1;
+outcome(draw) ->  0.
+
+% transform 0, 1, 2 to rock, paper, scissors and vice versa.
+
+enum(0) ->
+    rock;
+enum(1) ->
+    paper;
+enum(2) ->
+    scissors.
+
+val(rock) ->
+    0;
+val(paper) ->
+    1;
+val(scissors) ->
+    2.
+
+% give the play which the argument beats.
+
+beats(rock) ->
+    scissors;
+beats(paper) ->
+    rock;
+beats(scissors) ->
+    paper.
+
+%
+% strategies.
+%
+echo([]) ->
+     paper;
+echo([Last|_]) ->
+    Last.
+
+rock(_) ->
+    rock.
+
+
+
+% FOR YOU TO DEFINE
+% REPLACE THE dummy DEFINITIONS
+
+no_repeat([]) ->
+    dummy;
+no_repeat([X|_]) ->
+    dummy.
+
+const(Play) ->
+    dummy.
+
+cycle(Xs) ->
+    dummy.
+
+rand(_) ->
+    dummy.
