@@ -1,4 +1,4 @@
--module(rps2).
+-module(myrps).
 -compile(export_all).
 
 -type rps_type():: rock | paper | scissors.
