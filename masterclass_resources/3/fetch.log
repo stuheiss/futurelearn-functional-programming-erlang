@@ -1,0 +1,126 @@
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/calc_gen
+--2017-03-19 13:16:57--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/calc_gen
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:00 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/expr
+--2017-03-19 13:17:00--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/expr
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:02 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/client1
+--2017-03-19 13:17:02--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/client1
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:05 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/server1
+--2017-03-19 13:17:05--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/server1
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:07 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/applications/calc
+--2017-03-19 13:17:07--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/applications/calc
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:09 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/applications/calc_sup
+--2017-03-19 13:17:09--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/applications/calc_sup
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:11 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/applications/calc_app
+--2017-03-19 13:17:11--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/applications/calc_app
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:13 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/applications/expr
+--2017-03-19 13:17:13--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/applications/expr
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:16 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/behaviours/calc
+--2017-03-19 13:17:16--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/behaviours/calc
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:17 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/behaviours/expr
+--2017-03-19 13:17:17--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/behaviours/expr
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:20 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/gen_servers/calc
+--2017-03-19 13:17:20--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/gen_servers/calc
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:22 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/gen_servers/expr
+--2017-03-19 13:17:22--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/gen_servers/expr
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:24 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/server/calc
+--2017-03-19 13:17:24--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/server/calc
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:26 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/server/server
+--2017-03-19 13:17:26--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/server/server
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:28 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/server/expr
+--2017-03-19 13:17:28--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/server/expr
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:31 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/supervisors/calc
+--2017-03-19 13:17:31--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/supervisors/calc
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:32 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/supervisors/expr
+--2017-03-19 13:17:32--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/supervisors/expr
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:34 ERROR 404: Not Found.
+
+https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/supervisors/calc_sup
+--2017-03-19 13:17:34--  https://www.cs.kent.ac.uk/ErlangMasterClasses/Erlang%20Master%20Class%203%20resources/supervisors/calc_sup
+Resolving www.cs.kent.ac.uk... 129.12.4.58, 2001:630:340:1100::58
+Connecting to www.cs.kent.ac.uk|129.12.4.58|:443... connected.
+HTTP request sent, awaiting response... 404 Not Found
+2017-03-19 13:17:37 ERROR 404: Not Found.
+
