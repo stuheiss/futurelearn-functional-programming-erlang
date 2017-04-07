@@ -8,32 +8,23 @@
 
 -module(frequency).
 -export([init/0,start/0]).
--export([alloc/0,dealloc/1,stop/0]).
+-export([allocate/0,deallocate/1,stop/0]).
 
 start() ->
   %register(?MODULE, spawn(?MODULE, init, [])).
   register(?MODULE, spawn(fun() -> init() end)).
 
-flush(N) ->
-  receive
-    X ->
-      io:format("got ~p~n",[X]),
-      flush(0)
-  after N ->
-    ok
-  end.
-
-alloc() ->
+allocate() ->
   frequency ! {request,self(),allocate},
-  flush(1000).
+  receive {reply,Reply} -> Reply end.
 
-dealloc(Freq) ->
+deallocate(Freq) ->
   frequency ! {request,self(),{deallocate,Freq}},
-  flush(1000).
+  receive {reply,Reply} -> Reply end.
 
 stop() ->
   frequency ! {request,self(),stop},
-  flush(1000).
+  receive {reply,Reply} -> Reply end.
 
 %% These are the start functions used to create and
 %% initialize the server.
