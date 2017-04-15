@@ -12,7 +12,7 @@
 -export([start_sup/0,stop_sup/0,kill_sup/0,kill_freq/0,kill_all/0]).
 -export([spawn_client/1,client/1]).
 -export([w/0,dump/0]).
--export([test1/0,test2/0]).
+-export([test1/0,test2/0,test3/0,test4/0,test5/0]).
 
 % test 2 calls with duration 5 seconds
 %  - start the supervisor
@@ -25,6 +25,7 @@
 %  - dump the {Free,Allocated} state
 %  - kill the supervisor and frequency server
 test1() ->
+  io:format("test normal calls~n"),
   start_sup(),
   timer:sleep(500),
   w(),
@@ -39,11 +40,12 @@ test1() ->
   stop_sup(),
   ok.
 
-% test 2 calls with duration 5 seconds and kill the frequency server after one second
+% test 2 calls with duration 5 seconds and stop the frequency server after one second
 % see how the frequency server is restarted by the supervisor
 % note that the calls are dropped when the frequency server is killed
 % see that the calls dont't complete since the clients were killed when the frequency server died
 test2() ->
+  io:format("test calls and stop freq server after 1 second~n"),
   start_sup(),
   timer:sleep(500),
   w(),
@@ -53,7 +55,63 @@ test2() ->
   timer:sleep(500),
   dump(),
   timer:sleep(1000),
-  kill_freq(),
+  stop(),
+  timer:sleep(1000),
+  w(),
+  dump(),
+  stop_sup(),
+  ok.
+
+% like test1 but kill a client and see what happens
+test3() ->
+  io:format("test calls and kill a client after 1 second~n"),
+  start_sup(),
+  timer:sleep(500),
+  w(),
+  dump(),
+  C1=spawn_client(5000),
+  _C2=spawn_client(5000),
+  timer:sleep(500),
+  exit(C1,kill),
+  dump(),
+  timer:sleep(6000),
+  w(),
+  dump(),
+  stop_sup(),
+  ok.
+
+% like test1 but kill the freq sever and see what happens
+test4() ->
+  io:format("test calls and kill freq server after 1 second~n"),
+  start_sup(),
+  timer:sleep(500),
+  w(),
+  dump(),
+  spawn_client(5000),
+  spawn_client(5000),
+  timer:sleep(500),
+  dump(),
+  timer:sleep(1000),
+  exit(whereis(frequency),kill),
+  timer:sleep(1000),
+  w(),
+  dump(),
+  stop_sup(),
+  ok.
+
+% like test1 but kill the supervisort and see what happens
+test5() ->
+  io:format("test calls and kill supervisor after 1 second~n"),
+  start_sup(),
+  timer:sleep(500),
+  w(),
+  dump(),
+  spawn_client(5000),
+  spawn_client(5000),
+  timer:sleep(500),
+  dump(),
+  timer:sleep(1000),
+  exit(whereis(supervisor),kill),
   timer:sleep(1000),
   w(),
   dump(),
@@ -158,11 +216,17 @@ loop(Frequencies) ->
       loop(NewFrequencies);
     {request, Pid, Tag, stop} ->
       Pid ! {reply, Tag, stopped};
-    {'EXIT', Pid, _Reason} ->                   %%% CLAUSE ADDED
+    {'EXIT', Pid, Reason} ->                   %%% CLAUSE ADDED
+      io:format("~p loop: got {'EXIT',~w,~p}~n",[self(),Pid,Reason]),
+      NewFrequencies = exited(Frequencies, Pid),
+      loop(NewFrequencies);
+    {'DOWN',Ref,process,Pid,Reason} ->
+      io:format("~p loop: got {'DOWN',~p,process,~w,~p}~n",[self(),Ref,Pid,Reason]),
       NewFrequencies = exited(Frequencies, Pid),
       loop(NewFrequencies);
     Msg ->
-      io:format("~p loop: unexpected ~p~n",[self(),Msg])
+      io:format("~p loop: unexpected ~p~n",[self(),Msg]),
+      loop(Frequencies)
   end.
 
 %% The supervisor loop
@@ -215,19 +279,24 @@ frequency(Msg) ->
 allocate({[], Allocated}, _Pid) ->
   {{[], Allocated}, {error, no_frequency}};
 allocate({[Freq|Free], Allocated}, Pid) ->
-  link(Pid),                                               %%% ADDED
-  {{Free, [{Freq, Pid}|Allocated]}, {ok, Freq}}.
+  Ref=erlang:monitor(process,Pid),
+  {{Free, [{Freq, Pid, Ref}|Allocated]}, {ok, Freq}}.
 
 deallocate({Free, Allocated}, Freq) ->
-  {value,{Freq,Pid}} = lists:keysearch(Freq,1,Allocated),  %%% ADDED
-  unlink(Pid),                                             %%% ADDED
-  NewAllocated=lists:keydelete(Freq, 1, Allocated),
-  {[Freq|Free],  NewAllocated}.
+  case lists:keysearch(Freq,1,Allocated) of  %%% ADDED
+    {value,{Freq,_Pid,Ref}} ->
+      erlang:demonitor(Ref),
+      NewAllocated=lists:keydelete(Freq, 1, Allocated),
+      {[Freq|Free],  NewAllocated};
+    Msg ->
+      io:format("~p deallocate unexpected ~p~n",[self(),Msg]),
+      {Free, Allocated}
+  end.
 
 exited({Free, Allocated}, Pid) ->                %%% FUNCTION ADDED
   io:format("~p exited free=~p, allocated=~p}~n",[Pid,Free,Allocated]),
     case lists:keysearch(Pid,2,Allocated) of
-      {value,{Freq,Pid}} ->
+      {value,{Freq,Pid,_Ref}} ->
         NewAllocated = lists:keydelete(Freq,1,Allocated),
         {[Freq|Free],NewAllocated};
       false ->
