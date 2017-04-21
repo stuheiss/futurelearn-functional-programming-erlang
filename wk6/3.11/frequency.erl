@@ -1,4 +1,4 @@
-%% Based on code from 
+%% Based on code from
 %%   Erlang Programming
 %%   Francecso Cesarini and Simon Thompson
 %%   O'Reilly, 2008
@@ -14,8 +14,7 @@
 %% initialize the server.
 
 start() ->
-    register(frequency,
-	     spawn(frequency, init, [])).
+  register(frequency, spawn(frequency, init, [])).
 
 init() ->
   Frequencies = {get_frequencies(), []},
@@ -42,23 +41,23 @@ loop(Frequencies) ->
 
 %% Functional interface
 
-allocate() -> 
-    frequency ! {request, self(), allocate},
-    receive 
-	    {reply, Reply} -> Reply
-    end.
+allocate() ->
+  frequency ! {request, self(), allocate},
+  receive
+    {reply, Reply} -> Reply
+  end.
 
-deallocate(Freq) -> 
-    frequency ! {request, self(), {deallocate, Freq}},
-    receive 
-	    {reply, Reply} -> Reply
-    end.
+deallocate(Freq) ->
+  frequency ! {request, self(), {deallocate, Freq}},
+  receive
+    {reply, Reply} -> Reply
+  end.
 
-stop() -> 
-    frequency ! {request, self(), stop},
-    receive 
-	    {reply, Reply} -> Reply
-    end.
+stop() ->
+  frequency ! {request, self(), stop},
+  receive
+    {reply, Reply} -> Reply
+  end.
 
 
 %% The Internal Help Functions used to allocate and

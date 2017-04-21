@@ -1,4 +1,4 @@
-%% Based on code from 
+%% Based on code from
 %%   Erlang Programming
 %%   Francecso Cesarini and Simon Thompson
 %%   O'Reilly, 2008
@@ -25,9 +25,9 @@
 %% initialize the server.
 
 start_link() ->
-    gen_server:start_link(
-		{local, ?MODULE}, 
-		?MODULE, [], []).
+  gen_server:start_link(
+  {local, ?MODULE},
+  ?MODULE, [], []).
 
 init([]) ->
   Frequencies = {get_frequencies(), []},
@@ -38,24 +38,24 @@ get_frequencies() -> [10,11,12,13,14,15].
 
 %% Functional interface
 
-allocate() -> 
-    'for you to do'.
+allocate() ->
+  'for you to do'.
 
-deallocate(Freq) -> 
-    'for you to do'.
+deallocate(Freq) ->
+  'for you to do'.
 
-stop() ->  
-    'for you to do'.  
+stop() ->
+  'for you to do'.
 
 handle_call(message, From, State) ->
-    'for you to do'.
+  'for you to do'.
 
 handle_cast(message, State) ->
-  'for you to do';  
-  
+  'for you to do';
+
 handle_cast(stop, State) ->
-  'for you to do'.    
-  
+  'for you to do'.
+
 
 %% The Internal Help Functions used to allocate and
 %% deallocate frequencies.
@@ -73,10 +73,10 @@ deallocate({Free, Allocated}, Freq) ->
 % default implementations
 
 handle_info(_Info, State) ->
-    {noreply, State}.
+  {noreply, State}.
 
 terminate(_Reason, _State) ->
-    ok.
+  ok.
 
 code_change(_OldVsn, State, _Extra) ->
-    {ok, State}.
+  {ok, State}.
