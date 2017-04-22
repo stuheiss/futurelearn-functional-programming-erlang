@@ -1,4 +1,4 @@
-%% Based on code from
+%% Based on code from 
 %%   Erlang Programming
 %%   Francecso Cesarini and Simon Thompson
 %%   O'Reilly, 2008
@@ -6,7 +6,7 @@
 %%   http://www.erlangprogramming.org/
 %%   (c) Francesco Cesarini and Simon Thompson
 
--module(gf).
+-module(frequency).
 -behaviour(gen_server).
 
 % an implementation of this is included.
@@ -25,9 +25,9 @@
 %% initialize the server.
 
 start_link() ->
-  gen_server:start_link(
-  {local, ?MODULE},
-  ?MODULE, [], []).
+    gen_server:start_link(
+		{local, ?MODULE}, 
+		?MODULE, [], []).
 
 init([]) ->
   Frequencies = {get_frequencies(), []},
@@ -38,29 +38,26 @@ get_frequencies() -> [10,11,12,13,14,15].
 
 %% Functional interface
 
-allocate() ->
-  gen_server:call(?MODULE, allocate).
+allocate() -> 
+    gen_server:call(?MODULE,allocate).
 
-deallocate(Freq) ->
-  gen_server:cast(?MODULE, {deallocate, Freq}).
+deallocate(Freq) -> 
+    gen_server:cast(?MODULE,{deallocate,Freq}).
 
-stop() ->
-  %gen_server:stop(?MODULE).
-  gen_server:cast(?MODULE, stop).
+stop() ->  
+    gen_server:cast(?MODULE,stop).  
 
 handle_call(allocate, From, State) ->
-  {NewState, {ok, Freq}} = allocate(State, From),
-  %io:format("handle_call(~p,~p,~p) returns ~p~n",[allocate,From,State,NewState]),
-  {reply, Freq, NewState}.
+    {NewState, Reply} = allocate(State,From),
+    {reply, Reply, NewState}.
+
+handle_cast({deallocate,Freq}, State) ->
+    NewState = deallocate(State,Freq),
+    {noreply, NewState};
 
 handle_cast(stop, State) ->
-  {stop, normal, State};
-
-handle_cast({deallocate, Freq}, State) ->
-  NewState = deallocate(State, Freq),
-  %io:format("handle_cast(~p,~p) returns ~p~n",[{deallocate, Freq},State,NewState]),
-  {noreply, NewState}.
-
+    {stop,stopped,State}.
+  
 
 %% The Internal Help Functions used to allocate and
 %% deallocate frequencies.
@@ -78,11 +75,10 @@ deallocate({Free, Allocated}, Freq) ->
 % default implementations
 
 handle_info(_Info, State) ->
-  {noreply, State}.
+    {noreply, State}.
 
-terminate(Reason, State) ->
-  io:format("terminate reason=~w state=~w~n", [Reason, State]),
-  ok.
+terminate(_Reason, _State) ->
+    ok.
 
 code_change(_OldVsn, State, _Extra) ->
-  {ok, State}.
+    {ok, State}.
